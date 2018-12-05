@@ -1,34 +1,62 @@
 package io.pivotal.pal.tracker;
 
-import java.time.LocalDate;
+import org.springframework.http.ResponseEntity;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class InMemoryTimeEntryRepository {
-//    public void create(TimeEntry te) {
-//        System.out.println("Test");
-//    }
+public class InMemoryTimeEntryRepository implements TimeEntryRepository{
+    TimeEntry timeEntry;
+    List<TimeEntry> timeEntryList =  new ArrayList<>();
 
-    public TimeEntry create(TimeEntry te) {
-        return te;
+
+    public TimeEntry create(TimeEntry timeEntry) {
+        this.timeEntry=timeEntry;
+        this.timeEntry.setId(timeEntryList.size()+1);
+        timeEntryList.add(timeEntry);
+        //TimeEntry createdTimeEntry = (TimeEntry) (new TimeEntry(timeEntry.getProjectId(), timeEntry.getUserId(), timeEntry.getDate(),timeEntry.getHours()));
+        return this.timeEntry;//createdTimeEntry;
     }
 
-    public TimeEntry find (long id) {
-        TimeEntry te = new TimeEntry(1, 1, LocalDate.parse("2017-01-08"), 1);
-        return te;
+    public TimeEntry find(long timeEntryId) {
+        TimeEntry respTimeEntry = null;
+        for (Iterator<TimeEntry> iterator = this.timeEntryList.iterator(); iterator.hasNext(); ) {
+            TimeEntry timeEntry = iterator.next();
+            if (timeEntry.getId()==timeEntryId) {
+                respTimeEntry=timeEntry;
+            }
+        }
+        return respTimeEntry;
     }
 
-    public TimeEntry update (long id, TimeEntry te) {
-        return te;
+    public List<TimeEntry> list() {
+        return this.timeEntryList;
     }
 
-    public List<TimeEntry> list () {
-        List<TimeEntry> lte = new ArrayList<>();
-        return lte;
-    }
+    public TimeEntry update(long id, TimeEntry timeEntry) {
+        TimeEntry respTimeEntry = null;
+        int index = 0;
+        for (Iterator<TimeEntry> iterator = this.timeEntryList.iterator(); iterator.hasNext(); ) {
+            TimeEntry timeEntryIt = iterator.next();
 
+            if (timeEntryIt.getId()==id) {
+                timeEntry.setId(id);
+                respTimeEntry=timeEntry;
+                this.timeEntryList.set(index, timeEntry);
+                break;
+            }
+            index ++;
+        }
+        return respTimeEntry;
+    }
 
     public void delete(long id) {
-
+        for (Iterator<TimeEntry> iterator = this.timeEntryList.iterator(); iterator.hasNext(); ) {
+            TimeEntry timeEntry = iterator.next();
+            if (timeEntry.getId()==id) {
+                iterator.remove();
+            }
+        }
     }
 }
