@@ -9,16 +9,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import javax.sql.DataSource;
+import java.util.TimeZone;
+
 @SpringBootApplication
 public class PalTrackerApplication {
 
     public static void main(String arg[]){
         SpringApplication.run(PalTrackerApplication.class, arg);
     }
+
     @Bean
-    TimeEntryRepository timeEntryRepository() {
-        return new InMemoryTimeEntryRepository();
+    TimeEntryRepository timeEntryRepository(DataSource datasource) {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        return new JdbcTimeEntryRepository(datasource);
     }
+
     @Bean
     public ObjectMapper jsonObjectMapper() {
         return Jackson2ObjectMapperBuilder.json()
