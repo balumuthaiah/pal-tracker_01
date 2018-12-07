@@ -26,6 +26,7 @@ public class TimeEntryController {
     @PostMapping
     public ResponseEntity create(@RequestBody TimeEntry timeEntryToCreate) {
         actionCounter.increment();
+        timeEntrySummary.record(timeEntryRepository.list().size());
         return new ResponseEntity<TimeEntry>(timeEntryRepository.create(timeEntryToCreate), HttpStatus.CREATED);
     }
 
@@ -60,6 +61,7 @@ public class TimeEntryController {
     public ResponseEntity<TimeEntry> delete(@PathVariable  long timeEntryId) {
         this.timeEntryRepository.delete(timeEntryId);
         actionCounter.increment();
+        timeEntrySummary.record(timeEntryRepository.list().size());
         return  new ResponseEntity<TimeEntry>(HttpStatus.NO_CONTENT);
     }
 }
